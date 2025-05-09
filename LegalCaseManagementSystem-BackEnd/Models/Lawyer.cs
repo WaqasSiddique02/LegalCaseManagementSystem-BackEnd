@@ -8,6 +8,6 @@
         public string Specialization { get; set; } = string.Empty;
 
         public User User { get; set; } = null!;
-        public ICollection<Case> AssignedCases { get; set; } = new List<Case>();
+        public ICollection<Case> AssignedCases { get; set; } = [];
     }
 }

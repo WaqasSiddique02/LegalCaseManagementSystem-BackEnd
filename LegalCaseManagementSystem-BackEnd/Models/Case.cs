@@ -15,9 +15,9 @@ namespace LegalCaseManagementSystem_BackEnd.Models
 
         public Client Client { get; set; } = null!;
         public Lawyer Lawyer { get; set; } = null!;
-        public ICollection<CaseTask> Tasks { get; set; } = new List<CaseTask>();
-        public ICollection<Document> Documents { get; set; } = new List<Document>();
-        public ICollection<Hearing> Hearings { get; set; } = new List<Hearing>();
-        public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+        public ICollection<CaseTask> Tasks { get; set; } = [];
+        public ICollection<Document> Documents { get; set; } = [];
+        public ICollection<Hearing> Hearings { get; set; } = [];
+        public ICollection<Invoice> Invoices { get; set; } = [];
     }
 }
