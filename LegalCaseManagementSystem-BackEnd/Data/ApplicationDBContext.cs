@@ -1,15 +1,16 @@
 ﻿using LegalCaseManagementSystem_BackEnd.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LegalCaseManagementSystem_BackEnd.Data
+namespace api.Data
 {
     public class ApplicationDBContext : DbContext
     {
-        public ApplicationDBContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
+        public ApplicationDBContext(DbContextOptions<ApplicationDBContext> dbContextOptions)
+            : base(dbContextOptions)
         {
-
         }
 
+        // DbSets for each of your models
         public DbSet<User> Users { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Lawyer> Lawyers { get; set; }
@@ -18,5 +19,45 @@ namespace LegalCaseManagementSystem_BackEnd.Data
         public DbSet<Document> Documents { get; set; }
         public DbSet<Hearing> Hearings { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configure CaseTask to Lawyer relationship - Changed to NoAction
+            modelBuilder.Entity<CaseTask>()
+                .HasOne(t => t.AssignedToLawyer)
+                .WithMany()
+                .HasForeignKey(t => t.AssignedToLawyerId)
+                .OnDelete(DeleteBehavior.NoAction); // Changed from SetNull
+
+            // Configure CaseTask to Case relationship
+            modelBuilder.Entity<CaseTask>()
+                .HasOne(t => t.Case)
+                .WithMany(c => c.CaseTasks) // Assuming Case has a Tasks collection
+                .HasForeignKey(t => t.CaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Case to Client relationship with cascading delete
+            modelBuilder.Entity<Case>()
+                .HasOne(c => c.Client)
+                .WithMany(c => c.Cases) // Assuming Client has a Cases collection
+                .HasForeignKey(c => c.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Case to Lawyer relationship with restrict delete behavior
+            modelBuilder.Entity<Case>()
+                .HasOne(c => c.Lawyer)
+                .WithMany(l => l.AssignedCases) // Assuming Lawyer has a Cases collection
+                .HasForeignKey(c => c.LawyerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Optional: Add index for better performance on frequently queried columns
+            modelBuilder.Entity<CaseTask>()
+                .HasIndex(t => t.Status);
+
+            modelBuilder.Entity<Case>()
+                .HasIndex(c => c.Status);
+        }
     }
 }

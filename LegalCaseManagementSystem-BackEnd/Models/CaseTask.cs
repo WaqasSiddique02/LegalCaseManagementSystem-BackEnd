@@ -1,7 +1,10 @@
-﻿namespace LegalCaseManagementSystem_BackEnd.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LegalCaseManagementSystem_BackEnd.Models
 {
     public class CaseTask
     {
+        [Key]
         public int TaskId { get; set; }
         public int CaseId { get; set; }
         public int? AssignedToLawyerId { get; set; }
