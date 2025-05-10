@@ -6,6 +6,6 @@ namespace LegalCaseManagementSystem_BackEnd.DTOs.Clients
     {
         public string FullName { get; set; } = string.Empty;
         public string ContactInfo { get; set; } = string.Empty;
-        public CreateUserDTO User { get; set; } = null!;
+        public CreateUserDto User { get; set; } = null!;
     }
 }

@@ -1,4 +1,5 @@
 using api.Data;
+using LegalCaseManagementSystem_BackEnd.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,14 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<LawyerService>();
+builder.Services.AddScoped<ClientService>();
+builder.Services.AddScoped<CaseService>();
+builder.Services.AddScoped<CaseTaskService>();
+builder.Services.AddScoped<DocumentService>();
+builder.Services.AddScoped<HearingService>();
+builder.Services.AddScoped<InvoiceService>();
 
 var app = builder.Build();
 
