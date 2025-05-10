@@ -29,26 +29,26 @@ namespace api.Data
                 .HasOne(t => t.AssignedToLawyer)
                 .WithMany()
                 .HasForeignKey(t => t.AssignedToLawyerId)
-                .OnDelete(DeleteBehavior.NoAction); // Changed from SetNull
+                .OnDelete(DeleteBehavior.NoAction);
 
             // Configure CaseTask to Case relationship
             modelBuilder.Entity<CaseTask>()
                 .HasOne(t => t.Case)
-                .WithMany(c => c.CaseTasks) // Assuming Case has a Tasks collection
+                .WithMany(c => c.CaseTasks) 
                 .HasForeignKey(t => t.CaseId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Case to Client relationship with cascading delete
             modelBuilder.Entity<Case>()
                 .HasOne(c => c.Client)
-                .WithMany(c => c.Cases) // Assuming Client has a Cases collection
+                .WithMany(c => c.Cases) 
                 .HasForeignKey(c => c.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Case to Lawyer relationship with restrict delete behavior
             modelBuilder.Entity<Case>()
                 .HasOne(c => c.Lawyer)
-                .WithMany(l => l.AssignedCases) // Assuming Lawyer has a Cases collection
+                .WithMany(l => l.AssignedCases) 
                 .HasForeignKey(c => c.LawyerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
