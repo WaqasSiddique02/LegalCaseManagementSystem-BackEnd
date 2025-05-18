@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using LegalCaseManagementSystem_BackEnd.DTOs;
 using LegalCaseManagementSystem_BackEnd.Services;
 using LegalCaseManagementSystem_BackEnd.DTOs.CaseTasks;
+using LegalCaseManagementSystem_BackEnd.DTOs.Users;
 
 namespace LegalCaseManagementSystem_BackEnd.Controllers
 {

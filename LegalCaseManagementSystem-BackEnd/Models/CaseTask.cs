@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace LegalCaseManagementSystem_BackEnd.Models
 {
@@ -10,6 +11,7 @@ namespace LegalCaseManagementSystem_BackEnd.Models
         public int? AssignedToLawyerId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
+
         public string Status { get; set; } = "Pending";
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? CompletedAt { get; set; }

@@ -5,40 +5,54 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
+// Configuration
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secret = jwtSettings["Secret"];
+var secret = jwtSettings["Secret"] ?? throw new ArgumentNullException("JWT Secret is missing");
 
-// Add services to the container.
-
+// Services
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<ApplicationDBContext>(options =>
+
+// CORS Configuration (Updated)
+builder.Services.AddCors(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
-    };
+        policy.WithOrigins(
+                "https://localhost:7285"  // Blazor Server
+              )
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();  // Required for cookies/auth
+    });
 });
 
+// Database
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Authentication (Updated)
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+            ClockSkew = TimeSpan.Zero 
+        };
+    });
+
+// Services Registration
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<LawyerService>();
 builder.Services.AddScoped<ClientService>();
@@ -49,18 +63,28 @@ builder.Services.AddScoped<HearingService>();
 builder.Services.AddScoped<InvoiceService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthService>();
+var webRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+if (!Directory.Exists(webRoot))
+{
+    Directory.CreateDirectory(webRoot);
+}
+builder.WebHost.UseWebRoot("wwwroot");
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Pipeline Configuration
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
+// Critical Middleware Order
+app.UseRouting();
+app.UseCors("AllowFrontend"); 
 app.UseAuthentication();
 app.UseAuthorization();
 
