@@ -17,9 +17,16 @@ namespace LegalCaseManagementSystem_BackEnd.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<CaseDTO>> GetAllAsync()
+     public async Task<IEnumerable<CaseDTO>> GetAllAsync(string? include = null)
         {
-            return await _context.Cases
+            IQueryable<Case> query = _context.Cases;
+
+            if (include?.ToLower() == "client")
+            {
+                query = query.Include(c => c.Client);
+            }
+
+            return await query
                 .Select(c => new CaseDTO
                 {
                     CaseId = c.CaseId,
@@ -29,7 +36,14 @@ namespace LegalCaseManagementSystem_BackEnd.Services
                     StartDate = c.StartDate,
                     EndDate = c.EndDate,
                     ClientId = c.ClientId,
-                    LawyerId = c.LawyerId
+                    LawyerId = c.LawyerId,
+                    Client = c.Client != null ? new ClientDTO
+                    {
+                        ClientId = c.Client.ClientId,
+                        UserId = c.Client.UserId,
+                        FullName = c.Client.FullName,
+                        ContactInfo = c.Client.ContactInfo
+                    } : null
                 })
                 .ToListAsync();
         }
@@ -50,20 +64,20 @@ namespace LegalCaseManagementSystem_BackEnd.Services
                     EndDate = c.EndDate,
                     ClientId = c.ClientId,
                     LawyerId = c.LawyerId,
-                    Client = new ClientDTO
+                    Client = c.Client != null ? new ClientDTO
                     {
                         ClientId = c.Client.ClientId,
                         UserId = c.Client.UserId,
                         FullName = c.Client.FullName,
                         ContactInfo = c.Client.ContactInfo
-                    },
-                    Lawyer = new LawyerDTO
+                    } : null,
+                    Lawyer = c.Lawyer != null ? new LawyerDTO
                     {
                         LawyerId = c.Lawyer.LawyerId,
                         UserId = c.Lawyer.UserId,
                         FullName = c.Lawyer.FullName,
                         Specialization = c.Lawyer.Specialization
-                    }
+                    } : null
                 })
                 .FirstOrDefaultAsync();
         }

@@ -18,9 +18,9 @@ namespace LegalCaseManagementSystem_BackEnd.Controllers
 
         // GET: api/cases
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CaseDTO>>> GetCases()
+        public async Task<ActionResult<IEnumerable<CaseDTO>>> GetCases(bool includeClient = false)
         {
-            var cases = await _caseService.GetAllAsync();
+            var cases = await _caseService.GetAllAsync(includeClient ? "client" : null);
             return Ok(cases);
         }
 

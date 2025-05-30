@@ -1,4 +1,6 @@
-﻿namespace LegalCaseManagementSystem_BackEnd.DTOs.Cases
+﻿using LegalCaseManagementSystem_BackEnd.DTOs.Clients;
+
+namespace LegalCaseManagementSystem_BackEnd.DTOs.Cases
 {
     public class CaseDTO
     {
@@ -9,6 +11,7 @@
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int ClientId { get; set; }
+        public ClientDTO? Client { get; set; }
         public int LawyerId { get; set; }
     }
 }

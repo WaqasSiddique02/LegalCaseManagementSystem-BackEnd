@@ -17,17 +17,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// CORS Configuration (Updated)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
-                "https://localhost:7285"  // Blazor Server
+                "https://localhost:7285" 
               )
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials();  // Required for cookies/auth
+              .AllowCredentials(); 
     });
 });
 
